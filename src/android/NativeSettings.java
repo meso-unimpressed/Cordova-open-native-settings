@@ -27,16 +27,15 @@ public class NativeSettings extends CordovaPlugin {
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-		Context context=this.cordova.getActivity().getApplicationContext();
+        Context context=this.cordova.getActivity().getApplicationContext();
         PluginResult.Status status = PluginResult.Status.OK;
         Uri packageUri = Uri.parse("package:" + this.cordova.getActivity().getPackageName());
         String result = "";
 
         //Information on settings can be found here:
         //http://developer.android.com/reference/android/provider/Settings.html
-		
-		action = args.getString(0);
-		Intent intent = null;
+        action = args.optString(0);
+        Intent intent = null;
 
         if (action.equals("accessibility")) {
             intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
@@ -47,7 +46,11 @@ public class NativeSettings extends CordovaPlugin {
         } else if (action.equals("apn")) {
             intent = new Intent(android.provider.Settings.ACTION_APN_SETTINGS);
         } else if (action.equals("application_details")) {
-            intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageUri);
+            // intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + args.getString(1)));
+            intent = new Intent();
+            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                intent.addCategory(Intent.CATEGORY_DEFAULT);
+                intent.setData(Uri.parse("package:" + args.getString(1)));
         } else if (action.equals("application_development")) {
             intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS);
         } else if (action.equals("application")) {
@@ -101,21 +104,21 @@ public class NativeSettings extends CordovaPlugin {
         } else if (action.equals("nfc_settings")) {
             intent = new Intent(android.provider.Settings.ACTION_NFC_SETTINGS);
         } else if (action.equals("notification_id")) {
-			// from: https://stackoverflow.com/questions/32366649/any-way-to-link-to-the-android-notification-settings-for-my-app
-			intent = new Intent();
-			if(android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1){
-				intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
-				intent.putExtra("android.provider.extra.APP_PACKAGE", context.getPackageName());
-			}else if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-				intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
-				intent.putExtra("app_package", context.getPackageName());
-				intent.putExtra("app_uid", context.getApplicationInfo().uid);
-			}else {
-				intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-				intent.addCategory(Intent.CATEGORY_DEFAULT);
-				intent.setData(Uri.parse("package:" + context.getPackageName()));
-			}
-		}
+            // from: https://stackoverflow.com/questions/32366649/any-way-to-link-to-the-android-notification-settings-for-my-app
+            intent = new Intent();
+            if(android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1){
+                intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+                intent.putExtra("android.provider.extra.APP_PACKAGE", context.getPackageName());
+            }else if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+                intent.putExtra("app_package", context.getPackageName());
+                intent.putExtra("app_uid", context.getApplicationInfo().uid);
+            }else {
+                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                intent.addCategory(Intent.CATEGORY_DEFAULT);
+                intent.setData(Uri.parse("package:" + context.getPackageName()));
+            }
+        }
         //else if (action.equals("notification_listner")) {
         //    intent = new Intent(android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
         //}
@@ -149,21 +152,22 @@ public class NativeSettings extends CordovaPlugin {
         } else if (action.equals("wifi_ip")) {
             intent = new Intent(android.provider.Settings.ACTION_WIFI_IP_SETTINGS);
         } else if (action.equals("wifi")) {
-        	intent = new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS);
+            intent = new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS);
         } else if (action.equals("wireless")) {
             intent = new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS);
         } else {
              status = PluginResult.Status.INVALID_ACTION;
+             result = Integer.toString(args.length());
              callbackContext.sendPluginResult(new PluginResult(status, result));
-        	return false;
+            return false;
         }
         
-        if(args.length() > 1 && args.getBoolean(1)) {
-        	intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        }
+        // if(args.length() > 1 && args.getBoolean(1)) {
+        //  intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        // }
         this.cordova.getActivity().startActivity(intent);
         
-        callbackContext.sendPluginResult(new PluginResult(status, result));
+        callbackContext.sendPluginResult(new PluginResult(status, "test"));
         return true;
     }
 }

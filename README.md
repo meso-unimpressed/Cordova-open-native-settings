@@ -8,19 +8,19 @@ It will be saved to the config.xml file
 Ionic Framework:
 
 ```bash
-ionic cordova plugin (add|rm) cordova-open-native-settings
+ionic cordova plugin add https://github.com/meso-unimpressed/Cordova-open-native-settings.git
 ```
 
 Cordova:
 
 ```bash
-cordova plugin (add|rm) cordova-open-native-settings --save
+cordova plugin add https://github.com/meso-unimpressed/Cordova-open-native-settings.git
 ```
 
 or via npm (It will be saved to the package.json file)
 
 ```bash
-npm (install|rm) cordova-open-native-settings --save
+npm (install|rm) https://github.com/meso-unimpressed/Cordova-open-native-settings.git
 ```
 
 ## Using the plugin (opens Location Settings in Android and Application Settings in iOS)
